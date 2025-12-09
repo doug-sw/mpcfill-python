@@ -36,9 +36,9 @@ class SearchSettings:
         self.minimum_dpi = max(minimum_dpi, MINIMUM_DPI)
         self.maximum_dpi = min(maximum_dpi, MAXIMUM_DPI)
         self.maximum_size = min(maximum_size, MAXIMUM_SIZE)
-        self.languages = languages if languages is None else  []
-        self.includes_tags = includes_tags if includes_tags is None else []
-        self.excludes_tags = excludes_tags if excludes_tags is None else [Tag.NSFW]
+        self.languages = languages if languages is not None else  []
+        self.includes_tags = includes_tags if includes_tags is not None else []
+        self.excludes_tags = excludes_tags if excludes_tags is not None else [Tag.NSFW]
 
     def add_include_tag(self, tag: str):
         self.includes_tags.append(tag)

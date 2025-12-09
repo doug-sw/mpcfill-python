@@ -9,7 +9,7 @@ def dict_to_namespace(data: Dict[str, Any]) -> SimpleNamespace:
     Recursively convert a dictionary to a SimpleNamespace.
     Nested dictionaries and lists of dictionaries are converted recursively.
     """
-    ns_data = {}
+    ns_data = {}    
     for k, v in data.items():
         if isinstance(v, dict):
             ns_data[k] = dict_to_namespace(v)

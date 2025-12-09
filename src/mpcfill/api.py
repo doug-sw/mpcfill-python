@@ -3,11 +3,10 @@ from typing import List, Dict, Optional
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from .http import client
-from mpcfill.models import Card
-from mpcfill.search_settings import SearchSettings
+from mpcfill.models.card import Card
+import json
 
-
-def search_cards( queries: List[Dict], search_settings: SearchSettings) -> dict[Card]:
+def search_cards( queries: List[Dict], search_settings: "SearchSettings") -> dict[Card]:
     """
     Search for cards by query.
     Returns a list of Card objects.
@@ -33,3 +32,15 @@ def get_card_metadata(card_ids: List[str]) -> List[Card]:
         cards.append(Card(data))
 
     return cards
+
+def fetch_sources() -> list[dict]:
+    """Fetch available sources from MPCFill."""
+    return client.get("/2/sources/")["results"]  # returns list of dicts with id, name, url
+
+def fetch_languages() -> list[dict]:
+    """Fetch supported languages from MPCFill."""
+    return client.get("/2/languages/")["languages"]  # returns list of dicts with code, name
+
+def fetch_tags() -> list[str]:
+    """Fetch available tags (e.g., NSFW, Full-Art)."""
+    return client.get("/2/tags/")["tags"] # returns list of strings

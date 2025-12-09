@@ -1,5 +1,4 @@
 from mpcfill.filters import Tag, Language, CardType
-from mpcfill.models import Card
 from mpcfill.api import search_cards
 from mpcfill.search_settings import SearchSettings
 from mpcfill.utils import make_safe_path

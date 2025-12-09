@@ -5,6 +5,7 @@ from typing import Any, Dict, Optional
 from pathlib import Path
 from mpcfill.utils import dict_to_namespace, namespace_to_dict
 import shutil
+from mpcfill.http import client
 
 _PATH_CACHE: Dict[str, Path] = {}
 
@@ -97,7 +98,6 @@ class Card:
         Raises:
             ValueError: If the card has no download link.
         """
-        from mpcfill.api.http import client
         if not hasattr(self, "downloadLink") or not self.downloadLink:
             raise ValueError(f"Card {self.identifier} has no download link")
 

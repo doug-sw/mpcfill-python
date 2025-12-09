@@ -1,104 +1,133 @@
-from enum import Enum
+import re
+from dataclasses import dataclass, field
+from types import SimpleNamespace
+from typing import List, Dict, Any, Iterator
+from mpcfill.api import fetch_tags
+from mpcfill.utils import dict_to_namespace
 
-class Tag(Enum):
-    # Art
-    ART = "Art"
-    ALTERED_ART = "Altered Art"
+# ------------------------------------------------------------
+# Normalize a human-readable name into a Python-safe identifier
+# ------------------------------------------------------------
+def normalize_python_identifier(name: str) -> str:
+    """
+    Normalize a human-readable tag name into a valid Python identifier.
+    Produces UPPER_SNAKE_CASE identifiers.
+
+    Assumption: input always starts with a letter.
+    """
+
+    ident = name.upper()
+    ident = re.sub(r"[^A-Z0-9_]", "_", ident)
+    ident = re.sub(r"_+", "_", ident)
+    ident = ident.strip("_")
+    return ident
+
+@dataclass
+class Tag:
+    id: int
+    name: str
+    parent_id: int | None = None
+
+@dataclass
+class TagNode:
+    """
+    Recursive dataclass for MPCFill tag trees.
+    Wraps the raw dict and exposes keys as attributes with dot-access.
+    Children automatically become TagNode instances.
+    """
+
+    _data: Dict[str, Any] = field(default_factory=dict)
+    _ns: SimpleNamespace = field(init=False, repr=False)
+    children: List["TagNode"] = field(init=False, default_factory=list)
+
+    def __post_init__(self):
+        # Extract children before namespace so they don't collide.
+        raw_children = self._data.get("children", [])
+
+        # Build namespace from all non-children fields
+        non_child_data = {k: v for k, v in self._data.items() if k != "children"}
+        self._ns = SimpleNamespace(**non_child_data)
+
+        # Recursively wrap children
+        self.children = [TagNode(_data=child) for child in raw_children]
+
+    def __getattr__(self, item: str) -> Any:
+        # Delegate attribute access to SimpleNamespace
+        try:
+            return getattr(self._ns, item)
+        except AttributeError:
+            raise AttributeError(
+                f"{item!r} not found in tag fields {list(self._data.keys())}"
+            )
+
+    def __getitem__(self, key: str) -> Any:
+        return self._data[key]
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert back to raw dict form."""
+        return {
+            **{k: v for k, v in self._data.items() if k != "children"},
+            "children": [child.to_dict() for child in self.children],
+        }
+
+    def walk(self):
+        """Depth-first iteration over this tag and its descendants."""
+        yield self
+        for c in self.children:
+            yield from c.walk()
+
+    def find(self, name: str) -> "TagNode":
+        """Find a tag anywhere in the tree by name."""
+        for node in self.walk():
+            if node.name.lower() == name.lower():
+                return node
+        return None
+
+class TagHierarchy:
+    """
+    A helper around a list of TagNode roots.
+    Provides:
+    - fast lookup by name or alias
+    - traversal helpers
+    - normalization of names
+    """
+
+    def __init__(self):
+        self.roots = [TagNode(data) for data in fetch_tags()]
+        self._index = {node.name.lower(): node for node in self.walk()} 
+
+    def find(self, name: str) -> TagNode | None:
+        """Find a tag by name or alias."""
+        return self._index.get(name.lower())
+
+    def __getitem__(self, name: str) -> TagNode:
+        found = self.find(name)
+        if not found:
+            raise KeyError(f"Tag {name!r} not found in hierarchy.")
+        return found
+
+    def walk(self):
+        """Iterate all nodes in the entire hierarchy."""
+        for root in self.roots:
+            yield from root.walk()
+
+    def flatten(self) -> List[TagNode]:
+        """Return all nodes in a flat list."""
+        return list(self.walk())
+
+
+def build_tag_namespace(hierarchy: TagHierarchy) -> SimpleNamespace:
+    """
+    Converts TagHierarchy into a SimpleNamespace where:
+
     PIXEL_ART = "Pixel Art"
-    POP_OUT_ART = "Pop-Out Art"
-    SKETCH_ART = "Sketch Art"
-    CUSTOM_ART = "Custom Art"
-    AI_ART = "AI Art"
-    ARTIST_ART = "Artist Art"
-    SWITCHED_ART = "Switched Art"
-    UPSCALED_SCAN = "Upscaled Scan"
-
-    # Frame
-    FRAME = "Frame"
-    BORDERLESS = "Borderless"
-    POST_2023_BORDERLESS = "Post-2023 Borderless"
-    CUSTOM_MADE_FRAME = "Custom-Made Frame"
-    MINIMALIST = "Minimalist"
-    STONECUTTER = "Stonecutter"
-    EXTENDED_ART = "Extended-Art"
-    FNM_PROMO = "FNM Promo"
-    FOIL_ETCHED = "Foil-Etched"
-    FULL_TEXT = "Full Text"
-    FUTURESHIFTED = "Futureshifted"
-    M15 = "M15"
-    MODERN = "Modern"
-    PLANESHIFTED = "Planeshifted"
-    RETRO = "Retro"
-
-    # Showcase examples
-    SHOWCASE = "Showcase"
-    AMONKHET_INVOCATIONS = "Amonkhet Invocations"
-    CAPENNA_ART_DECO = "Capenna Art Deco"
-    CAPENNA_GOLDEN_AGE = "Capenna Golden Age"
-    CAPENNA_SKYSCRAPER = "Capenna Skyscraper"
-    CLASSICSHIFTED = "ClassicShifted"
-    COMMANDER_LEGENDS = "Commander Legends"
-    DND_MODULE = "D&D Module"
-    DND_SOURCEBOOK = "D&D Sourcebook"
-    DOCTOR_WHO_TARDIS = "Doctor Who TARDIS"
-    DOMINARIA_STAINED_GLASS = "Dominaria Stained Glass"
-    ELDRAINE_ENCHANTING_TALES = "Eldraine Enchanting Tales"
-    ELDRAINE_STORYBOOK = "Eldraine Storybook"
-    ENGLISH_MYSTICAL_ARCHIVE = "English Mystical Archive"
-    FCA_SHOWCASE = "FCA Showcase"
-    IKORIA_CRYSTAL = "Ikoria Crystal"
-    INNISTRAD_EQUINOX = "Innistrad Equinox"
-    INNISTRAD_FANG = "Innistrad Fang"
-    IXALAN_COIN = "Ixalan Coin"
-    JAPANESE_MYSTICAL_ARCHIVE = "Japanese Mystical Archive"
-    JAPAN_SHOWCASE = "Japan Showcase"
-    KALADESH_INVENTIONS = "Kaladesh Inventions"
-    KALDHEIM_VIKING = "Kaldheim Viking"
-    KAMIGAWA_NEON = "Kamigawa Neon"
-    KAMIGAWA_NINJA = "Kamigawa Ninja"
-    KAMIGAWA_SAMURAI = "Kamigawa Samurai"
-    LOTR_RING = "LOTR Ring"
-    LOTR_SCROLLS_OF_MIDDLE_EARTH = "LOTR Scrolls of Middle-earth"
-    M21_SPELLBOOK = "M21 Spellbook"
-    PHYREXIA_OIL = "Phyrexia Oil"
-    RAVNICA_ARCHITECTURE = "Ravnica Architecture"
-    SKETCH_FRAME = "Sketch Frame"
-    TARKIR_DRAGON_WING = "Tarkir Dragon Wing"
-    THEROS_NYX = "Theros Nyx"
-    ZENDIKAR_EXPEDITIONS = "Zendikar Expeditions"
-    ZENDIKAR_HEDRON = "Zendikar Hedron"
-    ZENDIKAR_RISING_EXPEDITIONS = "Zendikar Rising Expeditions"
-
-    # Full-Art
     FULL_ART = "Full-Art"
+    LANDSCAPE_WIDE = "Landscape / Wide"
 
-    # Misc
-    MISC = "Misc"
-    ALTERNATE_NAME = "Alternate Name"
-    NICKNAME = "Nickname"
-    CARD = "Card"
-    ETERNAL_NIGHT_CARD = "Eternal Night Card"
-    REALISTIC = "Realistic"
-    SECRET_LAIR = "Secret Lair"
-    TEXTLESS = "Textless"
-    NON_BLACK_BORDER = "Non-Black Border"
-    GOLD_BORDER = "Gold Border"
-    SILVER_BORDER = "Silver Border"
-    WHITE_BORDER = "White Border"
+    Keys are Python-safe identifiers,
+    Values remain human-readable names.
+    """
+    return dict_to_namespace({normalize_python_identifier(tag.name): tag.name for tag in hierarchy.walk()})
 
-    # NSFW
-    NSFW = "NSFW"
-
-    # Universe
-    UNIVERSE = "Universe"
-    ANIME = "Anime"
-    HATSUNE_MIKU = "Hatsune Miku"
-    AVATAR_THE_LAST_AIRBENDER = "Avatar The Last Airbender"
-    DR_WHO = "Dr Who"
-    FALLOUT = "Fallout"
-    FINAL_FANTASY = "Final Fantasy"
-    IN_MULTIVERSE = "In-Multiverse"
-    LEAGUE_OF_LEGENDS = "League of Legends"
-    LORD_OF_THE_RINGS = "Lord of the Rings"
-    SPIDER_MAN = "Spider-Man"
-    WARHAMMER_40K = "Warhammer 40k"
+tag_hierarchy = TagHierarchy()
+Tag = build_tag_namespace(tag_hierarchy)
