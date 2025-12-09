@@ -1,0 +1,11 @@
+class Language:
+    ARABIC = "AR"
+    CHINESE = "ZH"
+    ENGLISH = "EN"
+    FRENCH = "FR"
+    GERMAN = "DE"
+    ITALIAN = "IT"
+    JAPANESE = "JA"
+    PORTUGUESE = "PT"
+    SANSKRIT = "SA"
+    SPANISH = "ES"

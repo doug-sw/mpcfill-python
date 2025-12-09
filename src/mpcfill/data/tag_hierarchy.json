@@ -1,0 +1,104 @@
+{
+  "Art": {
+    "Altered Art": {
+      "Pixel Art": {},
+      "Pop-Out Art": {},
+      "Sketch Art": {}
+    },
+    "Custom Art": {
+      "AI Art": {},
+      "Artist Art": {},
+      "Switched Art": {}
+    },
+    "Upscaled Scan": {}
+  },
+  "Frame": {
+    "Borderless": {
+      "Post-2023 Borderless": {}
+    },
+    "Custom-Made Frame": {
+      "Minimalist": {},
+      "Stonecutter": {}
+    },
+    "Extended-Art": {},
+    "FNM Promo": {},
+    "Foil-Etched": {},
+    "Full Text": {},
+    "Futureshifted": {},
+    "M15": {},
+    "Modern": {},
+    "Planeshifted": {},
+    "Retro": {},
+    "Showcase": {
+      "Amonkhet Invocations": {},
+      "Capenna Art Deco": {},
+      "Capenna Golden Age": {},
+      "Capenna Skyscraper": {},
+      "ClassicShifted": {},
+      "Commander Legends": {},
+      "D&D Module": {},
+      "D&D Sourcebook": {},
+      "Doctor Who TARDIS": {},
+      "Dominaria Stained Glass": {},
+      "Eldraine Enchanting Tales": {},
+      "Eldraine Storybook": {},
+      "English Mystical Archive": {},
+      "FCA Showcase": {},
+      "Ikoria Crystal": {},
+      "Innistrad Equinox": {},
+      "Innistrad Fang": {},
+      "Ixalan Coin": {},
+      "Japanese Mystical Archive": {},
+      "Japan Showcase": {},
+      "Kaladesh Inventions": {},
+      "Kaldheim Viking": {},
+      "Kamigawa Neon": {},
+      "Kamigawa Ninja": {},
+      "Kamigawa Samurai": {},
+      "LOTR Ring": {},
+      "LOTR Scrolls of Middle-earth": {},
+      "M21 Spellbook": {},
+      "Phyrexia Oil": {},
+      "Ravnica Architecture": {},
+      "Sketch Frame": {},
+      "Tarkir Dragon Wing": {},
+      "Theros Nyx": {},
+      "Zendikar Expeditions": {},
+      "Zendikar Hedron": {},
+      "Zendikar Rising Expeditions": {}
+    },
+    "Universes Beyond": {}
+  },
+  "Full-Art": {},
+  "Misc": {
+    "Alternate Name": {
+      "Nickname": {}
+    },
+    "Card": {
+      "Eternal Night Card": {},
+      "Realistic": {},
+      "Secret Lair": {},
+      "Textless": {}
+    },
+    "Non-Black Border": {
+      "Gold Border": {},
+      "Silver Border": {},
+      "White Border": {}
+    }
+  },
+  "NSFW": {},
+  "Universe": {
+    "Anime": {
+      "Hatsune Miku": {}
+    },
+    "Avatar The Last Airbender": {},
+    "Dr Who": {},
+    "Fallout": {},
+    "Final Fantasy": {},
+    "In-Multiverse": {},
+    "League of Legends": {},
+    "Lord of the Rings": {},
+    "Spider-Man": {},
+    "Warhammer 40k": {}
+  }
+}

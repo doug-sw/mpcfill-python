@@ -1,0 +1,15 @@
+[project]
+name = "mpcfill-python"
+version = "0.1.0"
+description = "Python API wrapper for MPCFill: search, filter, and download card images."
+requires-python = ">=3.10"
+
+# dependencies as array of strings
+dependencies = [
+    "requests>=2.32",
+    "typing-extensions>=4.7"
+]
+
+[build-system]
+requires = ["setuptools>=65", "wheel"]
+build-backend = "setuptools.build_meta"
