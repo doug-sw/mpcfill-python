@@ -5,9 +5,7 @@ from typing import List, Dict, Any, Iterator
 from mpcfill.api import fetch_tags
 from mpcfill.utils import dict_to_namespace
 
-# ------------------------------------------------------------
-# Normalize a human-readable name into a Python-safe identifier
-# ------------------------------------------------------------
+
 def normalize_python_identifier(name: str) -> str:
     """
     Normalize a human-readable tag name into a valid Python identifier.
