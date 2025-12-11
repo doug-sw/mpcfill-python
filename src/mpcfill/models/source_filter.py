@@ -63,11 +63,11 @@ class SourceFilter:
             position = len(self._priority_order) + 1 + position
         self._priority_order.insert(position, sid)
 
-    def move_to_end(self, key: int | str):
+    def set_priority_lowest(self, key: int | str):
         """Move a source to the last position."""
         self.set_priority(key, -1)
 
-    def move_to_start(self, key: int | str):
+    def set_priority_highest(self, key: int | str):
         """Move a source to the first position."""
         self.set_priority(key, 0)
 

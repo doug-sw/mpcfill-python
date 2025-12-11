@@ -2,7 +2,7 @@ from types import SimpleNamespace
 from typing import Any, Dict, Callable
 import threading
 import re
-
+import string
 
 def dict_to_namespace(data: Dict[str, Any]) -> SimpleNamespace:
     """
@@ -45,3 +45,15 @@ def make_safe_path(s: str) -> str:
     # Collapse multiple underscores
     safe = re.sub(r'_+', '_', safe)
     return safe.strip('_')
+
+def normalize_query(query_str: str) -> str:
+    s = query_str.lower()
+    s = re.sub(r"[\(\[].*?[\)\]]", "", s)
+    s = re.sub(r"-+", " ", s)              
+    s = re.sub(r"\bthe\b", " ", s)           
+    s = s.replace("’", "'")                  
+    s = re.sub(r"^the\s+", "", s)
+    s = re.sub(rf"[{re.escape(string.punctuation)}]", "", s)
+    s = re.sub(r"\d+", "", s)
+    s = re.sub(r"\s+", " ", s).strip()
+    return s
