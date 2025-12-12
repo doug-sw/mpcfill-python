@@ -1,5 +1,6 @@
-from mpcfill.api import fetch_languages
-from mpcfill.utils import dict_to_namespace
+from functools import lru_cache
+from ..utils import dict_to_namespace
+from ..services.catalog import fetch_languages
 import re
 from types import SimpleNamespace
 

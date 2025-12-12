@@ -19,12 +19,18 @@ class RateLimiter:
         @wraps(func)
         def wrapper(*args, **kwargs):
             with self.lock:
+                now = time.time()
                 # Remove calls older than 1 second (optional for cleanup)
                 self.calls = [t for t in self.calls if now - t < 1.0]
                 
                 if self.calls:
                     elapsed = now - self.calls[-1]
                     sleep_time = min_interval - elapsed
-        """Compatibility shim: RateLimiter moved to http/rate_limiter.py."""
-        from .http.rate_limiter import *  # noqa: F401,F403
+                    if sleep_time > 0:
                         time.sleep(sleep_time)
+
+                self.calls.append(time.time())
+
+            return func(*args, **kwargs)
+
+        return wrapper

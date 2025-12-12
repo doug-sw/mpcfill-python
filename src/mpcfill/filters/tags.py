@@ -2,8 +2,9 @@ import re
 from dataclasses import dataclass, field
 from types import SimpleNamespace
 from typing import List, Dict, Any, Iterator
-from mpcfill.api import fetch_tags
-from mpcfill.utils import dict_to_namespace
+from functools import lru_cache
+from ..utils import dict_to_namespace
+from ..services.catalog import fetch_tags
 
 
 def normalize_python_identifier(name: str) -> str:

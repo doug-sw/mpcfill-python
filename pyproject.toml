@@ -10,6 +10,9 @@ dependencies = [
     "typing-extensions>=4.7"
 ]
 
+[project.scripts]
+mpcfill = "mpcfill.cli:main"
+
 [build-system]
 requires = ["setuptools>=65", "wheel"]
 build-backend = "setuptools.build_meta"

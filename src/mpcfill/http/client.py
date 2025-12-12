@@ -2,7 +2,6 @@ from __future__ import annotations
 import requests
 from typing import Any, Dict, Optional
 from .rate_limiter import RateLimiter
-import traceback
 
 BASE_URL = "https://mpcfill.com/"
 TIMEOUT = 10
@@ -11,7 +10,7 @@ TIMEOUT = 10
 rate_limit = RateLimiter(max_calls_per_second=10)
 
 
-class HttpClient:
+class Client:
     """
     Small wrapper around `requests` with:
     - Global base URL and timeout
@@ -43,8 +42,7 @@ class HttpClient:
         try:
             resp.raise_for_status()
         except requests.HTTPError as exc:
-            traceback.print_exc()
-            raise RuntimeError()
+            raise RuntimeError(f"HTTP POST failed: {exc}, url={url}, data={data}") from exc
         return resp.json()
 
     @rate_limit
@@ -57,5 +55,7 @@ class HttpClient:
         return resp.content
 
 
+__all__ = ["Client", "client"]
+
 # Default client singleton
-client = HttpClient()
+client = Client()

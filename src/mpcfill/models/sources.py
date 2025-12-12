@@ -5,8 +5,8 @@ from pathlib import Path
 from typing import Iterable, List, Any, Dict
 import json
 import csv
-from mpcfill.api import fetch_sources
-from mpcfill.utils import dict_to_namespace
+from ..utils import dict_to_namespace
+from ..services.catalog import fetch_sources
 from types import SimpleNamespace
 
 DEFAULT_SOURCES_PATH = Path(__file__).parents[1] / 'data' / 'sources.json'
@@ -90,3 +90,5 @@ class SourceCollection:
 
         sources = [Source(**item) for item in data]
         return sources
+
+    

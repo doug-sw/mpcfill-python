@@ -1,11 +1,9 @@
 from __future__ import annotations
-import base64
-from types import SimpleNamespace
 from typing import Any, Dict, Optional
 from pathlib import Path
-from mpcfill.utils import dict_to_namespace, namespace_to_dict
+from ..utils import dict_to_namespace, namespace_to_dict
 import shutil
-from mpcfill.http import client
+from ..http.client import client
 
 _PATH_CACHE: Dict[str, Path] = {}
 
@@ -113,7 +111,7 @@ class Card:
         if cached_path and cached_path.exists():
             if not dest_path.exists():
                 try:
-                    dest_path.link_to(cached_path)
+                    dest_path.hardlink_to(cached_path)
                 except OSError:
                     shutil.copy2(cached_path, dest_path)
             return dest_path

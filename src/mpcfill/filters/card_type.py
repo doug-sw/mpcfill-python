@@ -1,3 +1,1 @@
-class CardType:
-	CARD = "CARD"
-	TOKEN = "TOKEN"
+from ..types import CardType  # Re-export for backwards compatibility
