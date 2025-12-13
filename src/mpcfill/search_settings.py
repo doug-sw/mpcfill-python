@@ -1,8 +1,9 @@
 from typing import Any, Dict, List, Optional
+
+from mpcfill.filters.tag_utils import collapse_tags_to_parents
+from mpcfill.filters.tags import Tags
 from mpcfill.models.source_filter import SourceFilter
 from mpcfill.models.sources import SourceCollection
-from mpcfill.filters.tags import Tag
-from mpcfill.filters.tag_utils import collapse_tags_to_parents
 
 MAXIMUM_DPI = 1500
 MINIMUM_DPI = 0
@@ -11,8 +12,8 @@ MINIMUM_SIZE = 0
 
 
 class SearchSettings:
-    """
-    Encapsulates MPCFill search settings:
+    """Encapsulate MPCFill search settings.
+
     - search type settings (fuzzy search, filter cardbacks)
     - source settings (enabled/disabled, priority)
     - filter settings (DPI, size, languages, tags)
@@ -30,65 +31,73 @@ class SearchSettings:
         includes_tags: Optional[List[str]] = None,
         excludes_tags: Optional[List[str]] = None,
     ):
+        """Initialize with source, search, and filter options."""
         self.fuzzy_search = fuzzy_search
         self.filter_cardbacks = filter_cardbacks
         self.source_filter = SourceFilter(sources)
         self.minimum_dpi = max(minimum_dpi, MINIMUM_DPI)
         self.maximum_dpi = min(maximum_dpi, MAXIMUM_DPI)
         self.maximum_size = min(maximum_size, MAXIMUM_SIZE)
-        self.languages = languages if languages is not None else  []
+        self.languages = languages if languages is not None else []
         self.includes_tags = includes_tags if includes_tags is not None else []
-        self.excludes_tags = excludes_tags if excludes_tags is not None else [Tag.NSFW]
+        self.excludes_tags = excludes_tags if excludes_tags is not None else [Tags.NSFW]
 
     def add_include_tag(self, tag: str):
+        """Add a tag to the include filter list."""
         self.includes_tags.append(tag)
 
     def remove_include_tag(self, tag: str):
+        """Remove a tag from the include filter list if present."""
         if tag in self.includes_tags:
             self.includes_tags.remove(tag)
 
     def add_exclude_tag(self, tag: str):
+        """Add a tag to the exclude filter list if missing."""
         if tag not in self.excludes_tags:
             self.excludes_tags.append(tag)
 
     def remove_exclude_tag(self, tag: str):
+        """Remove a tag from the exclude filter list if present."""
         if tag in self.excludes_tags:
             self.excludes_tags.remove(tag)
 
     def enable_source(self, key: int | str):
+        """Enable a source by ID or name."""
         self.source_filter.enable(key)
 
     def disable_source(self, key: int | str):
+        """Disable a source by ID or name."""
         self.source_filter.disable(key)
 
     def enable_all_sources(self):
+        """Enable all sources."""
         self.source_filter.enable_all()
 
     def disable_all_sources(self):
+        """Disable all sources."""
         self.source_filter.disable_all()
 
     def set_source_priority_highest(self, key: int | str):
+        """Move a source to the highest priority."""
         self.source_filter.set_priority_highest(key)
 
     def set_source_priority_lowest(self, key: int | str):
+        """Move a source to the lowest priority."""
         self.source_filter.set_priority_lowest(key)
 
     def set_source_priority(self, key: int | str, index: int):
+        """Move a source to a specific index priority."""
         self.source_filter.set_priority(key, index)
 
     def to_dict(self) -> Dict[str, Any]:
-        """
-        Build the searchSettings JSON payload for a search.
-        """
+        """Build the ``searchSettings`` JSON payload for a search."""
         search_settings = {
             "searchSettings": {
                 "searchTypeSettings": {
                     "fuzzySearch": self.fuzzy_search,
                     "filterCardbacks": self.filter_cardbacks,
                 },
-                "sourceSettings": {
-                    "sources": self.source_filter.to_api_format()
-                },
+                "sourceSettings": {"sources": self.source_filter.to_api_format()},
                 "filterSettings": {
                     "minimumDPI": self.minimum_dpi,
                     "maximumDPI": self.maximum_dpi,

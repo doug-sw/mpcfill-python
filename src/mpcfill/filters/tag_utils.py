@@ -1,18 +1,18 @@
 from typing import List, Union
-from .tags import Tag, tag_hierarchy
+
+from .tags import Tags, tag_hierarchy
 
 
-def collapse_tags_to_parents(tags: List[Union[Tag, str]]) -> List[str]:
-    """
-    Collapse child tags into parents if both are selected.
+def collapse_tags_to_parents(tags: List[Union[Tags, str]]) -> List[str]:
+    """Collapse child tags into parents if both are selected.
+
     Returns tag names suitable for the MPCFill API.
 
     Rules:
     - If a parent and any of its descendants are both selected, keep only the parent.
-    - Inputs can be `Tag` constants or raw strings; output is a list of tag names.
+    - Inputs can be tag constants or raw strings; output is a list of tag names.
     - Unknown tag names are ignored.
     """
-
     if not tags:
         return []
 

@@ -16,3 +16,40 @@ mpcfill = "mpcfill.cli:main"
 [build-system]
 requires = ["setuptools>=65", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[tool.black]
+line-length = 88
+target-version = ["py310", "py311", "py312"]
+skip-string-normalization = false
+include = "src|examples"
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+exclude = ["src/mpcfill/__pycache__"]
+
+[tool.ruff.lint]
+extend-select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "D",  # pydocstyle (PEP 257)
+    "I",  # isort
+]
+ignore = [
+    "D100",  # Missing docstring in public module (opt-in later)
+    "D104",  # Missing docstring in public package
+    "D203",  # Prefer D211; avoid incompatible warnings
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+docstring-code-format = true
+
+[tool.ruff.lint.isort]
+known-first-party = ["mpcfill"]
